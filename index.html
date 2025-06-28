@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Bedelsiz Sermaye Artırımı Hesaplayıcısı</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #fff3e0);
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100svh;
+      padding: 0 20px;
+    }
+    .container {
+      background: #ffffffdd;
+      border-radius: 15px;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 420px;
+      max-height: 98svh;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      backdrop-filter: blur(6px);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 50px;
+      font-weight: 700;
+      font-size: 24px;
+           letter-spacing: 0.5px;
+}
+    h3  {
+        text-align: center;
+      color: #333;
+      margin-bottom: 4px;
+      font-weight: 700;
+      font-size: 14px;
+     letter-spacing: 0.5px;
+    
+ 
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      color: #444;
+      font-size: 15px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 5px;
+      border: 2px solid #74b9ff;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    input[type="number"]:focus {
+      border-color: #0984e3;
+      outline: none;
+      box-shadow: 0 0 6px #0984e3aa;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 700;
+      background: #00b894;
+      border: none;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #019875;
+    }
+    .sonuc {
+      margin-top: 20px;
+      background: #e6f9f1;
+      border-radius: 12px;
+      padding: 15px;
+      color: #056645;
+      font-size: 15px;
+      font-weight: 600;
+      display: none;
+    }
+    .sonuc-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+    .sonuc-item:hover {
+  background-color: gold;
+   box-shadow: 0 2px 6px rgba(0, 184, 148, 0.4);
+  transform: scale(1.055);
+}
+
+    }
+    .sonuc-icon {
+      font-size: 22px;
+      background: #00b894;
+      color: white;
+      padding: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,184,148,0.4);
+    }
+    .sonuc-text {
+      flex-grow: 1;
+    }
+    .baslik {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 2px;
+      color: #027a52;
+    }
+    .deger {
+      font-size: 16px;
+      color: #014d33;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Bedelsiz Sermaye Artırımı Hesaplayıcısı</h2>
+  <h3>NE KADAR LOTUM OLACAK? </h3>
+ 
+
+  <form id="hesapForm" onsubmit="hesapla(); return false;">
+    <label for="mevcutLot">Mevcut Lotunuz (adet):</label>
+    <input type="number" id="mevcutLot" placeholder="Örn: 1000" min="0" step="any" required />
+
+    <label for="bolunmeOran">Bölünme Oranı (%):</label>
+    <input type="number" id="bolunmeOran" placeholder="Örn: 100" min="0" step="any" required />
+
+    <label for="oncekiFiyat">Bölünme Öncesi Fiyat (₺):</label>
+    <input type="number" step="any" id="oncekiFiyat" placeholder="Örn: 10.50" min="0" required />
+
+    <button type="submit">HESAPLA</button>
+  </form>
+
+  <div id="sonuc" class="sonuc" aria-live="polite" aria-atomic="true"></div>
+</div>
+
+<script>
+function hesapla() {
+  const mevcutLot = parseFloat(document.getElementById("mevcutLot").value);
+  const oran = parseFloat(document.getElementById("bolunmeOran").value);
+  const oncekiFiyat = parseFloat(document.getElementById("oncekiFiyat").value);
+
+  if (isNaN(mevcutLot) || mevcutLot < 0 || isNaN(oran) || oran < 0 || isNaN(oncekiFiyat) || oncekiFiyat <= 0) {
+    alert("Lütfen tüm alanlara geçerli pozitif değerler girin.");
+    return;
+  }
+
+  const yeniLot = mevcutLot * (1 + oran / 100);
+  const kazanilanLot = yeniLot - mevcutLot;
+  const oncekiDeger = mevcutLot * oncekiFiyat;
+  const yeniFiyat = oncekiFiyat / (1 + oran / 100);
+  const yeniDeger = yeniLot * yeniFiyat;
+
+  function formatTL(tutar) {
+    return tutar.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ₺";
+  }
+
+  const sonuc = document.getElementById("sonuc");
+  sonuc.style.display = "block";
+  sonuc.innerHTML = `
+    <div class="sonuc-item">
+      <div class="sonuc-icon">🔢</div>
+      <div class="sonuc-text">
+        <div class="baslik">Bölünme Sonrası Toplam Lotunuz</div>
+        <div class="deger">${yeniLot.toFixed(2)} adet</div>
+      </div>
+    </div>
+
+    <div class="sonuc-item">
+      <div class="sonuc-icon">➕</div>
+      <div class="sonuc-text">
+        <div class="baslik">Kazanılan Lot Miktarınız</div>
+        <div class="deger">${kazanilanLot.toFixed(2)} adet</div>
+      </div>
+    </div>
+
+    <div class="sonuc-item">
+      <div class="sonuc-icon">💰</div>
+      <div class="sonuc-text">
+        <div class="baslik">Bölünme Öncesi Hissenizin Değeri</div>
+        <div class="deger">${formatTL(oncekiDeger)}</div>
+      </div>
+    </div>
+
+    <div class="sonuc-item">
+      <div class="sonuc-icon">💹 ️</div>
+      <div class="sonuc-text">
+        <div class="baslik">Bölünme Sonrası Yeni Fiyat</div>
+        <div class="deger">${formatTL(yeniFiyat)}</div>
+      </div>
+    </div>
+
+    <div class="sonuc-item">
+      <div class="sonuc-icon">💸</div>
+      <div class="sonuc-text">
+        <div class="baslik">Bölünme Sonrası Hissenizin Değeri</div>
+        <div class="deger">${formatTL(yeniDeger)}</div>
+      </div>
+    </div>
+  `;
+}
+
+// Yeni veri girildiğinde sonucu gizle
+document.querySelectorAll('#hesapForm input').forEach(input => {
+  input.addEventListener('input', () => {
+    document.getElementById('sonuc').style.display = 'none';
+  });
+});
+</script>
+
+</body>
+</html>
